@@ -1,0 +1,102 @@
+1. with cte as (
+select Cuisine Restaurant id, COUNT(*) as no of_orders
+from orders
+group by Cuisine Restaurant_id)
+select * from (
+select *,
+ROM NUMBER() over (partition by cuisine order by no_of_orders desc) as rn
+
+from cte) a
+
+where rn<=3
+
+
+
+2. WITH first_orders AS (
+    SELECT 
+        customer_code, 
+        MIN(DATE(placed_at)) AS first_order_date
+    FROM orders
+    GROUP BY customer_code
+)
+SELECT 
+    first_order_date, 
+    COUNT(*) AS no_of_new_cust
+FROM first_orders
+GROUP BY first_order_date
+ORDER BY first_order_date;
+
+
+
+3. select Customer_code, COUNT(*) as no_of_orders
+
+from orders
+
+where MONTH(placed_at)=1 and YEAR (placed_at)=2025
+
+and Customer_code not in (select distinct Customer_code
+
+from orders
+
+where not (MONTH(placed_at)=1 and YEAR (placed_at)=2025) )
+
+group by Customer_code
+
+having COUNT(*)=1
+
+
+
+
+4. WITH cte AS (
+    SELECT 
+        customer_code,  
+        MIN(placed_at) AS first_order,
+        MAX(placed_at) AS latest_order
+    FROM orders
+    GROUP BY customer_code
+)
+
+SELECT 
+    cte.*, 
+    orders.promo_code_name AS promo_code 
+FROM cte 
+INNER JOIN orders 
+    ON cte.customer_code = orders.customer_code 
+    AND cte.first_order = orders.placed_at
+WHERE 
+    cte.latest_order < DATE('now', '-7 days') 
+    AND cte.first_order < DATE('now', '-1 month') 
+    AND orders.promo_code_name IS NOT NULL;
+
+
+
+5. WITH cte AS (
+    SELECT *, 
+           ROW_NUMBER() OVER (PARTITION BY customer_code ORDER BY placed_at) AS order_number
+    FROM orders
+)
+SELECT *
+FROM cte
+WHERE order_number % 3 = 0 ;
+
+
+
+6. 
+
+select customer_code, count(*) as order_cnt,count(promo_code_name) as no_of_promo from orders
+group by customer_code
+having count(*)>1 and count(*)=count(promo_code_name);
+
+
+7.
+WITH cte AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY customer_code ORDER BY placed_at) AS rn
+    FROM orders
+    WHERE placed_at >= '2025-01-01' AND placed_at < '2025-02-01'
+)
+SELECT 
+    COUNT(CASE WHEN rn = 1 AND promo_code_name IS NULL THEN customer_code END) * 100.0 
+    / COUNT(DISTINCT customer_code) AS percentage
+FROM cte;
+
