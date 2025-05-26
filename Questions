@@ -1,0 +1,13 @@
+------Questions----------
+
+1. Find the top 3 outlets by cuisine type without using limit and top functions
+2. Find the daily new customer count from the launch date (everyday how many new customers are we acquiring)
+3. Count of all the users who were acquired in Jan 2025 and only placed one order in Jan and did not pace any order other order
+4. List of all the customers with no order in the last 7 days but were acquired one month ago with theirfirst order on promo
+5. Growth team is planning to create a trigger that will target customers after their every third order with a personalized communication and they have ased you to create a query for this.
+6. List customers who placed more than 1 order and all their orders on a promo only.
+7. What % of customers were organically acquired in Jan 2025 (placed their first order without promo code)
+
+
+
+
